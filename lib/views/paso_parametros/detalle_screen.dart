@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class DetalleScreen extends StatelessWidget {
   final String mensaje;
@@ -11,10 +12,17 @@ class DetalleScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Detalle")),
       body: Center(
-        child: Text(
-          "Mensaje recibido: $mensaje\n\n(Se registró en la consola)",
-          style: const TextStyle(fontSize: 20),
-          textAlign: TextAlign.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Mensaje recibido: $mensaje\n\n(Se registró en la consola)",
+              style: const TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(onPressed: () => context.go('/'), child: const Text('Volver al Home')),
+          ],
         ),
       ),
     );

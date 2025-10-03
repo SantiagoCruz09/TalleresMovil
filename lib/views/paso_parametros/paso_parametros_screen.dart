@@ -29,6 +29,12 @@ class PasoParametrosScreen extends StatelessWidget {
               label: const Text("Ir con replace()"),
               onPressed: () => context.replace("/detalle/Hola desde replace()"),
             ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              icon: const Icon(Icons.home),
+              label: const Text('Volver al Home'),
+              onPressed: () => context.go('/'),
+            ),
           ],
         ),
       ),

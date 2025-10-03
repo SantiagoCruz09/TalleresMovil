@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({Key? key}) : super(key: key);
@@ -9,11 +10,12 @@ class CustomDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          UserAccountsDrawerHeader(
             decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-            child: const Align(
-              alignment: Alignment.bottomLeft,
-              child: Text('Menú', style: TextStyle(color: Colors.white, fontSize: 20)),
+            accountName: const Text('Santiago A. Santacruz'),
+            accountEmail: const Text('santiago.santacruz01@uceva.edu.co'),
+            currentAccountPicture: CircleAvatar(
+              backgroundImage: NetworkImage('https://avatars.githubusercontent.com/u/162523782?s=400&u=bc844ab8c77d203fe645b1f523721e90170b18af&v=4'),
             ),
           ),
           ListTile(
@@ -21,7 +23,7 @@ class CustomDrawer extends StatelessWidget {
             title: const Text('Home'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/');
+              context.go('/');
             },
           ),
           ListTile(
@@ -29,7 +31,7 @@ class CustomDrawer extends StatelessWidget {
             title: const Text('Ciclo Vida'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/ciclo_vida');
+              context.go('/ciclo');
             },
           ),
           ListTile(
@@ -37,7 +39,41 @@ class CustomDrawer extends StatelessWidget {
             title: const Text('Paso Parámetros'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/paso_parametros');
+              context.go('/parametros');
+            },
+          ),
+          const Divider(),
+          // Nuevos botones solicitados
+          ListTile(
+            leading: const Icon(Icons.hourglass_bottom),
+            title: const Text('Future'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/future');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.code),
+            title: const Text('Async'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/async');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.timer),
+            title: const Text('Timer'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/timer');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.memory),
+            title: const Text('Isolate'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/isolate');
             },
           ),
         ],
