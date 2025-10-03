@@ -1,9 +1,14 @@
 
-# TalleresMovi2 - Grupo 2
+# TalleresMovil 
 
+Santiago Alejandro Santacruz Cuellar
+
+230222033
 Resumen
 -------
 Este proyecto es una aplicación Flutter de ejemplo desarrollada como parte del Taller 2. Incluye una estructura sencilla de rutas con `go_router`, varias pantallas de demostración (Home, Ciclo de Vida, Paso de Parámetros) y widgets reutilizables (`BaseView`, `CustomDrawer`). El objetivo del README es explicar la arquitectura, las rutas, cómo se pasan parámetros, y justificar las decisiones de diseño y widgets usados.
+
+Actualizaciones recientes: se añadieron demos sobre concurrencia y asincronía (ejemplos de `Future`, `async/await` y `Timer`) y se actualizó el demo de `Isolate` para usar `compute()` con soporte de iteraciones configurables y timeout para evitar bloqueos en la UI.
 
 Arquitectura y navegación
 ------------------------
@@ -69,8 +74,30 @@ Notas y próximos pasos sugeridos
 - Reemplazar `print` por `debugPrint` o `logging` para mejor control de salida.
 - Añadir tests unitarios y de widget para las pantallas críticas.
 
-Conclusiones (opinión del autor)
+Demos de concurrencia/async
+---------------------------
+- `FutureScreen` (`lib/views/buttons/future_screen.dart`): demo que muestra cómo lanzar un `Future` (simulación de llamada de red con `Future.delayed`) y actualizar la UI cuando completa. Imprime progreso en consola con `debugPrint` y muestra un indicador de carga mientras se ejecuta.
+- `AsyncScreen` (`lib/views/buttons/async_screen.dart`): demo de `async`/`await` que encapsula tareas asíncronas en un método `async`, usa banderas `_running` para deshabilitar botones y registra inicio/fin en la consola.
+- `TimerScreen` (`lib/views/buttons/timer_screen.dart`): demo que usa `Timer.periodic` para emitir ticks periódicos, actualizar la UI con los segundos transcurridos y cancelar el `Timer` en `dispose`.
+
+Cronómetro (implementación detallada)
+-----------------------------------
+- La pantalla `TimerScreen` implementa un cronómetro completo pensado para cumplir exactamente el requisito:
+	- Botones: Iniciar / Pausar / Reanudar / Reiniciar.
+	- Actualización del tiempo: por defecto cada 100 ms (se puede ajustar a 1000 ms para 1 s cambiando la constante `_tickMs`).
+	- Limpieza de recursos: el `Timer` se cancela en `dispose()` y también al pausar o reiniciar, evitando fugas de memoria o llamadas fuera de la vista.
+	- Visualización: el tiempo se muestra en un `Text` grande con formato `MM:SS.cc` (minutos:segundos.centisegundos) para que funcione como un marcador.
+	- Comportamiento: al iniciar se crea un `Timer.periodic`, al pausar se cancela el timer y se guarda el tiempo transcurrido, al reanudar se vuelve a crear el timer continuando desde el tiempo guardado, y al reiniciar vuelve a cero.
+	- Logs: la implementación emite `debugPrint` en eventos clave (start/pause/resume/reset y cada tick) para seguimiento en la consola.
+
+
+Actualización reciente: demo de Isolate
+-------------------------------------
+- Se actualizó el demo de Isolate (`lib/views/buttons/isolate_screen.dart`) para usar `compute()` en lugar de manejar `Isolate.spawn` y puertos manualmente. `compute()` usa isolates internamente y simplifica la ejecución de funciones pesadas en background.
+- La tarea ahora acepta un parámetro `iterations` y por defecto en la demo se ejecutan 10 iteraciones (configurables). Cada iteración realiza un bucle interno que se puede ajustar con la constante `inner` en la función `heavyComputation`.
+- Se añadió un `timeout` de 30 segundos para evitar que la UI quede esperando indefinidamente; en caso de timeout se muestra `Resultado: Timeout al ejecutar la tarea`.
+- Recomendación: si necesitas comunicación más compleja (mensajes continuos o streams), vuelve al patrón manual con `ReceivePort/SendPort` pero asegurando cierre y manejo de excepciones. Para tareas puntuales y puras, `compute()` es la vía preferida.
+
+Conclusiones
 --------------------------------
 He priorizado claridad educativa y una UI limpia. La estructura con `go_router` y widgets reutilizables facilita extender la app. Si implementas assets locales y un sistema de logging, la app tendrá una base sólida para producción.
-
-Si quieres, actualizo el README para incluir diagramas de rutas, agregar instrucciones para generar assets locales, o añadir ejemplos de tests. Dime qué prefieres y lo hago.

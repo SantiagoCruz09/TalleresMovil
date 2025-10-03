@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:grupo_2/widgets/custom_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,35 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(titulo),
         elevation: 2,
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: const Text('Santiago A. Santacruz'),
-              accountEmail: const Text('santiago.santacruz01@uceva.edu.co'),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage('https://avatars.githubusercontent.com/u/162523782?v=4'),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () => context.go('/'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.autorenew),
-              title: const Text('Ciclo de Vida'),
-              onTap: () => context.go('/ciclo'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.send),
-              title: const Text('Paso de Parámetros'),
-              onTap: () => context.go('/parametros'),
-            ),
-          ],
-        ),
-      ),
+      drawer: const CustomDrawer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
