@@ -7,6 +7,10 @@ import '../views/buttons/future_screen.dart';
 import '../views/buttons/async_screen.dart';
 import '../views/buttons/timer_screen.dart';
 import '../views/buttons/isolate_screen.dart';
+import '../models/appi_item.dart';
+import '../views/appi/list_screen.dart';
+import '../views/appi/detail_screen.dart';
+import '../services/appi_service.dart';
 
 final GoRouter appRouter = GoRouter(
   routes: [
@@ -44,6 +48,24 @@ final GoRouter appRouter = GoRouter(
       path: '/isolate',
       name: 'isolate',
       builder: (context, state) => const IsolateScreen(),
+    ),
+    // APPI: listado y detalle
+    GoRoute(
+      path: '/appi',
+      name: 'appi',
+      builder: (context, state) => AppiListScreen(
+        service: AppiService(baseUrl: 'https://api.artic.edu/api/v1/artworks'),
+      ),
+    ),
+    GoRoute(
+      path: '/appi/:id',
+      name: 'appi_detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        final extra = state.extra;
+        final AppiItem? item = extra is AppiItem ? extra : null;
+        return AppiDetailScreen(id: id, item: item, service: AppiService(baseUrl: 'https://api.artic.edu/api/v1/artworks'));
+      },
     ),
     GoRoute(
       path: '/detalle/:mensaje',
