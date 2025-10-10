@@ -101,3 +101,53 @@ Actualización reciente: demo de Isolate
 Conclusiones
 --------------------------------
 He priorizado claridad educativa y una UI limpia. La estructura con `go_router` y widgets reutilizables facilita extender la app. Si implementas assets locales y un sistema de logging, la app tendrá una base sólida para producción.
+
+APPI — Integración con Art Institute of Chicago API
+--------------------------------------------------
+Se añadió una integración experimental para consumir la API pública de Art Institute of Chicago (endpoint usado: `https://api.artic.edu/api/v1/artworks`). Esta integración incluye:
+
+- Servicio: `lib/services/appi_service.dart`
+	- Métodos principales:
+		- `fetchItems({int page = 1, int limit = 12})` — solicita la lista de obras y devuelve una `List<AppiItem>`.
+		- `fetchItemById(String id)` — solicita el detalle de una obra por `id`.
+	- Logs en consola usando `debugPrint` para indicar cuando se solicita una página, cuántos items llegaron y los ids/títulos de los items obtenidos.
+
+- Modelo: `lib/models/appi_item.dart`
+	- Campos mapeados (ejemplo): `id`, `title`, `description`, `image_id`, `imageUrl`, `artistDisplay`, `placeOfOrigin`, `dateDisplay`.
+	- La descripción se sanea (se eliminan tags HTML simples) para evitar que aparezcan etiquetas en la UI.
+	- Si `image_id` existe se construye una URL IIIF (`https://www.artic.edu/iiif/2/{image_id}/full/{width},/0/default.jpg`) como fuente preferente de la imagen.
+
+- Vistas:
+	- Listado: `lib/views/appi/list_screen.dart`
+		- Muestra título, artista, lugar, fecha y una descripción corta (saneada).
+		- Usa `AdaptiveNetworkImage` (`lib/widgets/adaptive_network_image.dart`) para intentar cargar una o varias fuentes de imagen y evitar mostrar imágenes rotas.
+		- Incluye un botón en el AppBar para volver al Home.
+		- Incluye un toggle en el AppBar para ocultar items sin imagen (por defecto ocultos), útil para evitar mostrar resultados con imágenes dañadas.
+	- Detalle: `lib/views/appi/detail_screen.dart`
+		- Muestra la imagen grande (con fallback placeholder si falla), título, artistDisplay, placeOfOrigin, dateDisplay y descripción completa.
+		- Botón "Volver" que intenta `pop()` y, si no hay historial, hace `goNamed('appi')` para volver al listado.
+
+Notas importantes y limitaciones
+- Algunas imágenes devueltas por la API pueden responder con 403 o estar inaccesibles desde ciertas ubicaciones; por eso implementamos:
+	- Fallbacks en `AdaptiveNetworkImage` y uso del campo `thumbnail.lqip` cuando esté disponible.
+	- Opción en la UI para ocultar los elementos que no tengan imagen disponible.
+- La integración actual no persiste caché de imágenes ni realiza HEAD checks (lo cual podría incrementar la latencia). Si quieres, puedo añadir caching (p. ej. con `cached_network_image`) o comprobaciones HEAD para filtrar items con imágenes inaccesibles antes de mostrarlos.
+
+Cómo probar la integración APPI
+1. Ejecuta desde la raíz del proyecto:
+
+```bash
+flutter pub get
+flutter run
+```
+
+2. Abre el Drawer y selecciona "APPI".
+3. Observa la consola donde ejecutaste `flutter run` para ver los `debugPrint` con el progreso de la petición (p. ej. items recibidos, ids, errores de petición si los hay).
+
+Mejoras posibles (opcional):
+- Paginación / carga infinita para navegar más resultados.
+- Probar varias construcciones IIIF (distintos `width`) antes de caer a `thumbnail.lqip` para reducir 403.
+- Añadir cache de imágenes con `cached_network_image`.
+- Extraer más campos en `AppiItem` (por ejemplo `medium_display`, `credit_line`, `dimensions`) para enriquecer la pantalla de detalle.
+
+Si quieres que documente en el README ejemplos de JSON retornado o copie un ejemplo concreto de la respuesta para pruebas offline, dímelo y lo agrego sin modificar lo que ya existe.
