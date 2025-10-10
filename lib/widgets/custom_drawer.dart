@@ -42,6 +42,14 @@ class CustomDrawer extends StatelessWidget {
               context.go('/parametros');
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.playlist_add),
+            title: const Text('Parcial'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/parcial');
+            },
+          ),
           const Divider(),
           // Nuevos botones solicitados
           ListTile(
