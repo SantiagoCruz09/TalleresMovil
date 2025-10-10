@@ -65,39 +65,118 @@ Cómo ejecutar
 flutter pub get
 flutter analyze
 flutter run
+
+-------
+Aplicación Flutter de ejemplo usada en el Taller 2. Contiene demos de navegación, concurrencia y ahora integra dos APIs públicas:
+
+- API Art Institute (APPI): listado y detalle de obras (ya disponible en el menú APPI).
+- API-Colombia (parcial): listados y detalle para
+	- Departamentos
+	- Ciudades
+	- Presidentes
+	- Atracciones turísticas
+
+La app usa `go_router` para navegación, `http` para peticiones y patrones separados por capas (models/services/views).
+
+Arquitectura y navegación
+------------------------
+- `MaterialApp.router` con `go_router` (`lib/routes/app_router.dart`).
+- Rutas relevantes añadidas (entre otras):
+	- `/parcial` → `lib/views/parcial/parcial_screen.dart` (pantalla central del parcial con botones hacia los listados)
+	- `/parcial/departments` → listado Departamentos (`lib/views/parcial/department_list.dart`)
+	- `/parcial/department/:id` → detalle Departamento (`lib/views/parcial/department_detail.dart`)
+	- `/parcial/cities` → listado Ciudades (`lib/views/parcial/city_list.dart`)
+	- `/parcial/city/:id` → detalle Ciudad (`lib/views/parcial/city_detail.dart`)
+	- `/parcial/presidents` → listado Presidentes (`lib/views/parcial/president_list.dart`)
+	- `/parcial/president/:id` → detalle Presidente (`lib/views/parcial/president_detail.dart`)
+	- `/parcial/attractions` → listado Atracciones (`lib/views/parcial/attraction_list.dart`)
+	- `/parcial/attraction/:id` → detalle Atracción (`lib/views/parcial/attraction_detail.dart`)
+	- `/appi` y `/appi/:id` → integraciones APPI (Art Institute)
+
+Cómo acceder
+------------
+- Abre el Drawer y pulsa "Parcial" para ir a la pantalla central del parcial. Desde allí accede a los listados.
+
+Integración API-Colombia (parcial)
+---------------------------------
+Se implementó una integración mínima con la API pública de Colombia para consumir los endpoints mencionados. Cambios principales:
+
+- Models: `lib/models/department.dart`, `lib/models/city.dart`, `lib/models/president.dart`, `lib/models/touristic_attraction.dart`.
+- Services: `lib/services/department_service.dart`, `lib/services/city_service.dart`, `lib/services/president_service.dart`, `lib/services/touristic_attraction_service.dart`.
+- Views (list y detail): `lib/views/parcial/*_list.dart`, `lib/views/parcial/*_detail.dart`.
+
+Notas técnicas sobre el parsing
+- Las respuestas de la API pueden llegar en dos formatos comunes: una lista directa o un wrapper `{ "data": [...] }`. Los servicios manejan ambos casos.
+- Los modelos usan parsing defensivo: funciones helper para convertir `String`/`num` a `int`/`double` y extraer campos anidados (por ejemplo `department` dentro de una `city`). Esto evita errores cuando los tipos vienen como strings o cuando hay objetos anidados.
+
+Diseño y UX de los listados
+---------------------------
+- Listados actualizados con un estilo más profesional:
+	- Uso de `Card` + `ListTile` con `CircleAvatar` (iniciales), subtítulos con metadatos y `trailing` con flecha.
+	- `RefreshIndicator` para pull-to-refresh.
+	- Manejo de estados: carga, error y vacío con mensajes claros.
+	- Botón de volver en AppBar que lleva a la pantalla `/parcial`.
+
+Registros / Logs
+---------------
+- Se añadieron `debugPrint` en:
+	- Cada pantalla de listado (registro al entrar y cuando llegan los items).
+	- Cada servicio HTTP (registro al iniciar la petición, elementos parseados y errores por item).
+- Para ver los logs abre la app con `flutter run` y observa la consola. Ejemplos:
+	- DepartmentListScreen: init - solicitando departamentos
+	- DepartmentService: GET https://api-colombia.com/api/v1/Department
+	- DepartmentService: items parseados=42
+	- DepartmentListScreen: items obtenidos=42
+
+Pruebas y ejecución
+-------------------
+1. Obtener dependencias:
+
+```powershell
+flutter pub get
 ```
 
-Notas y próximos pasos sugeridos
--------------------------------
-- Cambiar imágenes remotas por assets locales para funcionamiento offline.
-- Centralizar temas en `lib/themes/app_theme.dart` (ya existe una configuración base).
-- Reemplazar `print` por `debugPrint` o `logging` para mejor control de salida.
-- Añadir tests unitarios y de widget para las pantallas críticas.
+2. Analizar el proyecto:
 
-Demos de concurrencia/async
----------------------------
-- `FutureScreen` (`lib/views/buttons/future_screen.dart`): demo que muestra cómo lanzar un `Future` (simulación de llamada de red con `Future.delayed`) y actualizar la UI cuando completa. Imprime progreso en consola con `debugPrint` y muestra un indicador de carga mientras se ejecuta.
-- `AsyncScreen` (`lib/views/buttons/async_screen.dart`): demo de `async`/`await` que encapsula tareas asíncronas en un método `async`, usa banderas `_running` para deshabilitar botones y registra inicio/fin en la consola.
-- `TimerScreen` (`lib/views/buttons/timer_screen.dart`): demo que usa `Timer.periodic` para emitir ticks periódicos, actualizar la UI con los segundos transcurridos y cancelar el `Timer` en `dispose`.
+```powershell
+flutter analyze
+```
 
-Cronómetro (implementación detallada)
------------------------------------
-- La pantalla `TimerScreen` implementa un cronómetro completo pensado para cumplir exactamente el requisito:
-	- Botones: Iniciar / Pausar / Reanudar / Reiniciar.
-	- Actualización del tiempo: por defecto cada 100 ms (se puede ajustar a 1000 ms para 1 s cambiando la constante `_tickMs`).
-	- Limpieza de recursos: el `Timer` se cancela en `dispose()` y también al pausar o reiniciar, evitando fugas de memoria o llamadas fuera de la vista.
-	- Visualización: el tiempo se muestra en un `Text` grande con formato `MM:SS.cc` (minutos:segundos.centisegundos) para que funcione como un marcador.
-	- Comportamiento: al iniciar se crea un `Timer.periodic`, al pausar se cancela el timer y se guarda el tiempo transcurrido, al reanudar se vuelve a crear el timer continuando desde el tiempo guardado, y al reiniciar vuelve a cero.
-	- Logs: la implementación emite `debugPrint` en eventos clave (start/pause/resume/reset y cada tick) para seguimiento en la consola.
+3. Ejecutar en un dispositivo o emulador y ver logs:
+
+```powershell
+flutter run
+```
+
+Desde la app: Drawer → Parcial → elegir listado (Departamentos/Ciudades/Presidentes/Atracciones o APPI). Hacer pull-to-refresh para recargar.
+
+Errores y manejo defensivo
+-------------------------
+- Si la API devuelve arrays mixtos o strings en lugar de objetos, los servicios filtran elementos no-Map y registran en consola los items ignorados. Esto evita que la UI se rompa por formatos inesperados.
+- En caso de respuestas anidadas, los modelos intentan extraer el campo correcto (por ejemplo `department.id` dentro de `city`). Si necesitas modelos más exactos (Country, Region, Maps, NaturalAreas, etc.) puedo añadir clases anidadas y mapearlas explícitamente.
+
+Ficheros importantes añadidos (resumen)
+--------------------------------------
+- Models: `lib/models/department.dart`, `lib/models/city.dart`, `lib/models/president.dart`, `lib/models/touristic_attraction.dart`
+- Services: `lib/services/department_service.dart`, `lib/services/city_service.dart`, `lib/services/president_service.dart`, `lib/services/touristic_attraction_service.dart`
+- Views: `lib/views/parcial/parcial_screen.dart`, `lib/views/parcial/*_list.dart`, `lib/views/parcial/*_detail.dart`, además de las pantallas APPI ya existentes en `lib/views/appi/`.
+- Router: rutas añadidas en `lib/routes/app_router.dart`.
 
 
-Actualización reciente: demo de Isolate
--------------------------------------
-- Se actualizó el demo de Isolate (`lib/views/buttons/isolate_screen.dart`) para usar `compute()` en lugar de manejar `Isolate.spawn` y puertos manualmente. `compute()` usa isolates internamente y simplifica la ejecución de funciones pesadas en background.
-- La tarea ahora acepta un parámetro `iterations` y por defecto en la demo se ejecutan 10 iteraciones (configurables). Cada iteración realiza un bucle interno que se puede ajustar con la constante `inner` en la función `heavyComputation`.
-- Se añadió un `timeout` de 30 segundos para evitar que la UI quede esperando indefinidamente; en caso de timeout se muestra `Resultado: Timeout al ejecutar la tarea`.
-- Recomendación: si necesitas comunicación más compleja (mensajes continuos o streams), vuelve al patrón manual con `ReceivePort/SendPort` pero asegurando cierre y manejo de excepciones. Para tareas puntuales y puras, `compute()` es la vía preferida.
+Parcial
+--------------------------------------
 
-Conclusiones
---------------------------------
-He priorizado claridad educativa y una UI limpia. La estructura con `go_router` y widgets reutilizables facilita extender la app. Si implementas assets locales y un sistema de logging, la app tendrá una base sólida para producción.
+- Rutas y vistas nuevas: se agregó navegación y pantallas para consumir la API-Colombia (Departamentos, Ciudades, Presidentes, Atracciones). Las rutas relevantes están listadas en la sección "Arquitectura y navegación" arriba.
+- Modelos y servicios: creación de modelos defensivos y servicios HTTP que aceptan respuestas con wrapper `{ "data": [...] }` o listas directas. Archivos en `lib/models/` y `lib/services/`.
+- UI mejorada para listados: cada listado utiliza `Card` + `ListTile`, `RefreshIndicator`, manejo de estados (carga/error/vacío) y un botón de volver en el `AppBar` que regresa a `/parcial`.
+- Logs detallados: todos los listados y servicios emiten `debugPrint` para:
+	- indicar cuando se inicia una petición HTTP (URL)
+	- informar cuántos items válidos fueron parseados
+	- registrar items ignorados o errores de parseo por elemento
+	- informar cuando la pantalla recibe la lista (conteo)
+
+- Parsing defensivo: los modelos usan helpers para convertir `String`/`num` a `int`/`double` y extraer campos anidados de objetos JSON, evitando errores de tipado en tiempo de ejecución.
+
+- Botón "volver": cada listado ahora muestra un icono de back en el `AppBar` que lleva a la pantalla `/parcial`. Si prefieres que haga `context.pop()` en vez de `context.go('/parcial')`, dímelo y lo cambio.
+
+
