@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "288023753717",
+    "project_id": "tallerapk-d7a57",
+    "storage_bucket": "tallerapk-d7a57.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288023753717:android:f5097cc9541d071b8626bc",
+        "android_client_info": {
+          "package_name": "com.example.grupo_2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCF_UByaTWfDKRDcEiZ_vWGPZN8AnoPb4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
