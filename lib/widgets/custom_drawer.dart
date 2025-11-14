@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({Key? key}) : super(key: key);
+  const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +74,31 @@ class CustomDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               context.go('/isolate');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.school),
+            title: const Text('Universidades'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/universidades');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.login),
+            title: const Text('Login'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/login');
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.work),
+            title: const Text('Taller4'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/taller4');
             },
           ),
         ],

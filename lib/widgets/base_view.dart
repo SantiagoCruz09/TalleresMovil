@@ -6,12 +6,12 @@ class BaseView extends StatelessWidget {
 	final Widget? body;
 	final Widget? floatingActionButton;
 
-	const BaseView({
-		Key? key,
+		const BaseView({
+			super.key,
 		this.title = '',
 		this.body,
 		this.floatingActionButton,
-	}) : super(key: key);
+		});
 
 	@override
 	Widget build(BuildContext context) {

@@ -169,7 +169,7 @@ class _CicloVidaScreenState extends State<CicloVidaScreen> {
 }
 
 class LifecycleChild extends StatefulWidget {
-  const LifecycleChild({Key? key}) : super(key: key);
+  const LifecycleChild({super.key});
 
   @override
   State<LifecycleChild> createState() => _LifecycleChildState();

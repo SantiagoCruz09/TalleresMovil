@@ -7,6 +7,12 @@ import '../views/buttons/future_screen.dart';
 import '../views/buttons/async_screen.dart';
 import '../views/buttons/timer_screen.dart';
 import '../views/buttons/isolate_screen.dart';
+import '../views/auth/login_screen.dart';
+import '../views/auth/evidence_screen.dart';
+import '../views/auth/register_screen.dart';
+import '../views/universidades/universidades_screen.dart';
+import '../views/universidades/universidad_form_screen.dart';
+import '../views/taller4/taller4_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   routes: [
@@ -46,12 +52,50 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const IsolateScreen(),
     ),
     GoRoute(
+      path: '/universidades',
+      name: 'universidades',
+      builder: (context, state) => const UniversidadesScreen(),
+    ),
+    GoRoute(
+      path: '/universidades/new',
+      name: 'universidades_new',
+      builder: (context, state) => const UniversidadFormScreen(),
+    ),
+    GoRoute(
+      path: '/universidades/edit/:id',
+      name: 'universidades_edit',
+      builder: (context, state) {
+        final id = state.pathParameters['id'];
+        return UniversidadFormScreen(id: id);
+      },
+    ),
+    GoRoute(
       path: '/detalle/:mensaje',
       name: 'detalle',
       builder: (context, state) {
         final mensaje = state.pathParameters['mensaje'] ?? 'Sin mensaje';
         return DetalleScreen(mensaje: mensaje);
       },
+    ),
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/evidence',
+      name: 'evidence',
+      builder: (context, state) => const EvidenceScreen(),
+    ),
+    GoRoute(
+      path: '/register',
+      name: 'register',
+      builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/taller4',
+      name: 'taller4',
+      builder: (context, state) => const Taller4Screen(),
     ),
   ],
 );
